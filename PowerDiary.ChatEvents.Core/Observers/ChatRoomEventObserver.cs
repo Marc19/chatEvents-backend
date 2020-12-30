@@ -4,9 +4,9 @@ namespace PowerDiary.ChatEvents.Core.Observers
 {
     public class ChatRoomEventObserver : IChatRoomObserver
     {
-        private readonly IChatEventObserverRepository _chatEventObserverRepository;
+        private readonly IChatEventRepository _chatEventObserverRepository;
 
-        public ChatRoomEventObserver(IChatEventObserverRepository chatEventObserverRepository)
+        public ChatRoomEventObserver(IChatEventRepository chatEventObserverRepository)
         {
             _chatEventObserverRepository = chatEventObserverRepository;
         }

@@ -24,9 +24,10 @@ namespace PowerDiary.ChatEvents.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IChatEventRepository, ChatEventRepository>();
+            services.AddTransient<IChatActionService, ChatActionService>();
             services.AddTransient<IChatEventService, ChatEventService>();
-            services.AddTransient<IChatEventObserverRepository, ChatEventObserverRepository>();
+            services.AddTransient<IChatActionRepository, ChatActionRepository>();
+            services.AddTransient<IChatEventRepository, ChatEventRepository>();
             services.AddSingleton<IChatRoomObserver, ChatRoomEventObserver>();
             services.AddSingleton<IInMemoryDB, InMemoryDB>();
 

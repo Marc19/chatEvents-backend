@@ -12,11 +12,11 @@ namespace PowerDiary.ChatEvents.UnitTests.Tests
     public class LeaveChatRoomTests : IClassFixture<DbFixture>, IDisposable
     {
         private readonly IInMemoryDB _inMemoryDB;
-        private readonly IChatEventRepository _chatEventRepository;
+        private readonly IChatActionRepository _chatEventRepository;
 
         public LeaveChatRoomTests(DbFixture fixture)
         {
-            _chatEventRepository = fixture.ServiceProvider.GetService<IChatEventRepository>();
+            _chatEventRepository = fixture.ServiceProvider.GetService<IChatActionRepository>();
             _inMemoryDB = fixture.ServiceProvider.GetService<IInMemoryDB>();
         }
 

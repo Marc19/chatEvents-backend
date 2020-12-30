@@ -12,17 +12,19 @@ namespace PowerDiary.ChatEvents.API.Controllers
     [Route("api/[controller]/[action]")]
     public class ChatEventController : ControllerBase
     {
+        private readonly IChatActionService _chatActionService;
         private readonly IChatEventService _chatEventService;
 
-        public ChatEventController(IChatEventService chatEventService)
+        public ChatEventController(IChatActionService chatActionService, IChatEventService chatEventService)
         {
+            _chatActionService = chatActionService;
             _chatEventService = chatEventService;
         }
 
         [HttpPost]
         public IActionResult EnterTheRoom(UserRoomDTO userRoomDTO)
         {
-            Result result = _chatEventService.EnterTheRoom(userRoomDTO);
+            Result result = _chatActionService.EnterTheRoom(userRoomDTO);
 
             if (result.IsFailure)
             {
@@ -35,7 +37,7 @@ namespace PowerDiary.ChatEvents.API.Controllers
         [HttpPost]
         public IActionResult LeaveTheRoom(UserRoomDTO userRoomDTO)
         {
-            Result result = _chatEventService.LeaveTheRoom(userRoomDTO);
+            Result result = _chatActionService.LeaveTheRoom(userRoomDTO);
 
             if (result.IsFailure)
             {
@@ -48,7 +50,7 @@ namespace PowerDiary.ChatEvents.API.Controllers
         [HttpPost]
         public IActionResult Comment(CommentDTO commentDTO)
         {
-            Result result = _chatEventService.Comment(commentDTO);
+            Result result = _chatActionService.Comment(commentDTO);
 
             if (result.IsFailure)
             {
@@ -61,7 +63,7 @@ namespace PowerDiary.ChatEvents.API.Controllers
         [HttpPost]
         public IActionResult HighFive(HighFiveDTO highFiveDTO)
         {
-            Result result = _chatEventService.HighFive(highFiveDTO);
+            Result result = _chatActionService.HighFive(highFiveDTO);
 
             if (result.IsFailure)
             {
@@ -104,7 +106,7 @@ namespace PowerDiary.ChatEvents.API.Controllers
         [HttpGet]
         public IActionResult GetUsers()
         {
-            Result<IEnumerable<UserViewModel>> result = _chatEventService.GetUsers();
+            Result<IEnumerable<UserViewModel>> result = _chatActionService.GetUsers();
             
             if (result.IsFailure)
             {
@@ -117,7 +119,7 @@ namespace PowerDiary.ChatEvents.API.Controllers
         [HttpGet]
         public IActionResult GetChatRooms()
         {
-            Result<IEnumerable<ChatRoomViewModel>> result = _chatEventService.GetChatRooms();
+            Result<IEnumerable<ChatRoomViewModel>> result = _chatActionService.GetChatRooms();
 
             if (result.IsFailure)
             {

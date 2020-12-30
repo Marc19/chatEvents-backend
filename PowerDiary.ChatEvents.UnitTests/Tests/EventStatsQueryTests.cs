@@ -15,13 +15,17 @@ namespace PowerDiary.ChatEvents.UnitTests.Tests
     public class EventStatsQueryTests : IClassFixture<DbFixture>, IDisposable
     {
         private readonly IInMemoryDB _inMemoryDB;
+        private readonly IChatActionRepository _chatActionRepository;
         private readonly IChatEventRepository _chatEventRepository;
         private readonly IChatEventService _chatEventService;
 
         public EventStatsQueryTests(DbFixture fixture)
         {
+            _chatActionRepository = fixture.ServiceProvider.GetService<IChatActionRepository>();
+
             _chatEventRepository = fixture.ServiceProvider.GetService<IChatEventRepository>();
             _chatEventService = fixture.ServiceProvider.GetService<IChatEventService>();
+
             _inMemoryDB = fixture.ServiceProvider.GetService<IInMemoryDB>();
         }
 
@@ -106,10 +110,10 @@ namespace PowerDiary.ChatEvents.UnitTests.Tests
             _inMemoryDB.Users.Add(new User(6, "Luke"));
             _inMemoryDB.ChatRooms.Add(new ChatRoom(5, "CollegeBuddies"));
 
-            Result userEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result otherUserEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
-            Result commentResult = _chatEventRepository.Comment(new CommentDTO() { UserId = 3, ChatRoomId = 5, Text = "Some Comment." });
-            Result highFiveResult = _chatEventRepository.HighFive(new HighFiveDTO() { UserId = 3, OtherUserId = 6, ChatRoomId = 5 });
+            Result userEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result otherUserEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result commentResult = _chatActionRepository.Comment(new CommentDTO() { UserId = 3, ChatRoomId = 5, Text = "Some Comment." });
+            Result highFiveResult = _chatActionRepository.HighFive(new HighFiveDTO() { UserId = 3, OtherUserId = 6, ChatRoomId = 5 });
 
             Result<IEnumerable<EventStatsViewModel>> eventsResult = _chatEventRepository.GetChatEventStats(5, 1, null, null);
 
@@ -141,10 +145,10 @@ namespace PowerDiary.ChatEvents.UnitTests.Tests
             _inMemoryDB.Users.Add(new User(6, "Luke"));
             _inMemoryDB.ChatRooms.Add(new ChatRoom(5, "CollegeBuddies"));
 
-            Result userEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result otherUserEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
-            Result commentResult = _chatEventRepository.Comment(new CommentDTO() { UserId = 3, ChatRoomId = 5, Text = "Some Comment." });
-            Result highFiveResult = _chatEventRepository.HighFive(new HighFiveDTO() { UserId = 3, OtherUserId = 6, ChatRoomId = 5 });
+            Result userEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result otherUserEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result commentResult = _chatActionRepository.Comment(new CommentDTO() { UserId = 3, ChatRoomId = 5, Text = "Some Comment." });
+            Result highFiveResult = _chatActionRepository.HighFive(new HighFiveDTO() { UserId = 3, OtherUserId = 6, ChatRoomId = 5 });
 
             DateTime oneDayInTheFutureDate = GetTodaysDateWithYearsAdded(1);
             Result<IEnumerable<EventStatsViewModel>> firstEventsResult = _chatEventRepository.GetChatEventStats(5, 1, oneDayInTheFutureDate, null);
@@ -163,8 +167,8 @@ namespace PowerDiary.ChatEvents.UnitTests.Tests
 
             Assert.Empty(firstEventsResult.Value);
 
-            Result firstLeavingResult = _chatEventRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result secondLeavingResult = _chatEventRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result firstLeavingResult = _chatActionRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result secondLeavingResult = _chatActionRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
 
             _inMemoryDB.Events[4].TimeStamp = GetTodaysDateWithYearsAdded(2);
             _inMemoryDB.Events[5].TimeStamp = GetTodaysDateWithYearsAdded(2);
@@ -194,10 +198,10 @@ namespace PowerDiary.ChatEvents.UnitTests.Tests
             _inMemoryDB.Users.Add(new User(6, "Luke"));
             _inMemoryDB.ChatRooms.Add(new ChatRoom(5, "CollegeBuddies"));
 
-            Result userEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result otherUserEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
-            Result commentResult = _chatEventRepository.Comment(new CommentDTO() { UserId = 3, ChatRoomId = 5, Text = "Some Comment." });
-            Result highFiveResult = _chatEventRepository.HighFive(new HighFiveDTO() { UserId = 3, OtherUserId = 6, ChatRoomId = 5 });
+            Result userEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result otherUserEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result commentResult = _chatActionRepository.Comment(new CommentDTO() { UserId = 3, ChatRoomId = 5, Text = "Some Comment." });
+            Result highFiveResult = _chatActionRepository.HighFive(new HighFiveDTO() { UserId = 3, OtherUserId = 6, ChatRoomId = 5 });
 
             Result<IEnumerable<EventStatsViewModel>> firstEventsResult = _chatEventRepository.GetChatEventStats(5, 1, null, new DateTime(2020, 12, 25));
 
@@ -215,8 +219,8 @@ namespace PowerDiary.ChatEvents.UnitTests.Tests
 
             Assert.Empty(firstEventsResult.Value);
 
-            Result firstLeavingResult = _chatEventRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result secondLeavingResult = _chatEventRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result firstLeavingResult = _chatActionRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result secondLeavingResult = _chatActionRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
 
             DateTime olderDate = new DateTime(2020, 12, 20);
             _inMemoryDB.Events[4].TimeStamp = olderDate;
@@ -247,12 +251,12 @@ namespace PowerDiary.ChatEvents.UnitTests.Tests
             _inMemoryDB.Users.Add(new User(6, "Luke"));
             _inMemoryDB.ChatRooms.Add(new ChatRoom(5, "CollegeBuddies"));
 
-            Result userEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result otherUserEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
-            Result commentResult = _chatEventRepository.Comment(new CommentDTO() { UserId = 3, ChatRoomId = 5, Text = "Some Comment." });
-            Result highFiveResult = _chatEventRepository.HighFive(new HighFiveDTO() { UserId = 3, OtherUserId = 6, ChatRoomId = 5 });
-            Result firstLeavingResult = _chatEventRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result secondLeavingResult = _chatEventRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result userEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result otherUserEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result commentResult = _chatActionRepository.Comment(new CommentDTO() { UserId = 3, ChatRoomId = 5, Text = "Some Comment." });
+            Result highFiveResult = _chatActionRepository.HighFive(new HighFiveDTO() { UserId = 3, OtherUserId = 6, ChatRoomId = 5 });
+            Result firstLeavingResult = _chatActionRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result secondLeavingResult = _chatActionRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
 
             _inMemoryDB.Events[0].TimeStamp = new DateTime(2020, 12, 20, 13, 30, 00);
             _inMemoryDB.Events[1].TimeStamp = new DateTime(2020, 12, 20, 13, 35, 00);
@@ -311,14 +315,14 @@ namespace PowerDiary.ChatEvents.UnitTests.Tests
             _inMemoryDB.Users.Add(new User(9, "Sophie"));
             _inMemoryDB.ChatRooms.Add(new ChatRoom(5, "CollegeBuddies"));
 
-            Result user1EntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result user2EntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
-            Result commentResult = _chatEventRepository.Comment(new CommentDTO() { UserId = 3, ChatRoomId = 5, Text = "Some Comment." });
-            Result highFiveResult = _chatEventRepository.HighFive(new HighFiveDTO() { UserId = 3, OtherUserId = 6, ChatRoomId = 5 });
-            Result firstLeavingResult = _chatEventRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result secondLeavingResult = _chatEventRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
-            Result user3EntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 8, ChatRoomId = 5 });
-            Result user4EntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 9, ChatRoomId = 5 });
+            Result user1EntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result user2EntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result commentResult = _chatActionRepository.Comment(new CommentDTO() { UserId = 3, ChatRoomId = 5, Text = "Some Comment." });
+            Result highFiveResult = _chatActionRepository.HighFive(new HighFiveDTO() { UserId = 3, OtherUserId = 6, ChatRoomId = 5 });
+            Result firstLeavingResult = _chatActionRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result secondLeavingResult = _chatActionRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result user3EntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 8, ChatRoomId = 5 });
+            Result user4EntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 9, ChatRoomId = 5 });
 
             _inMemoryDB.Events[0].TimeStamp = new DateTime(2020, 12, 20, 12, 30, 00);
             _inMemoryDB.Events[1].TimeStamp = new DateTime(2020, 12, 20, 12, 35, 00);
@@ -430,12 +434,12 @@ namespace PowerDiary.ChatEvents.UnitTests.Tests
             _inMemoryDB.Users.Add(new User(6, "Luke"));
             _inMemoryDB.ChatRooms.Add(new ChatRoom(5, "CollegeBuddies"));
 
-            Result userFirstEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result otherFirstUserEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
-            Result userLeavingResult = _chatEventRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result otherUserLeavingResult = _chatEventRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
-            Result userSecondEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result otherSecondUserEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result userFirstEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result otherFirstUserEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result userLeavingResult = _chatActionRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result otherUserLeavingResult = _chatActionRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result userSecondEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result otherSecondUserEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
 
             Result<IEnumerable<EventStatsViewModel>> eventsResult = _chatEventRepository.GetChatEventStats(5, 1, null, null);
 
@@ -471,14 +475,14 @@ namespace PowerDiary.ChatEvents.UnitTests.Tests
             _inMemoryDB.Users.Add(new User(6, "Luke"));
             _inMemoryDB.ChatRooms.Add(new ChatRoom(5, "CollegeBuddies"));
 
-            Result userFirstEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result otherFirstUserEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
-            Result userFirstLeavingResult = _chatEventRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result otherFirstUserLeavingResult = _chatEventRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
-            Result userSecondEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result otherSecondUserEntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
-            Result userSecondLeavingResult = _chatEventRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result otherUserSecondLeavingResult = _chatEventRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result userFirstEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result otherFirstUserEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result userFirstLeavingResult = _chatActionRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result otherFirstUserLeavingResult = _chatActionRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result userSecondEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result otherSecondUserEntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result userSecondLeavingResult = _chatActionRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result otherUserSecondLeavingResult = _chatActionRepository.LeaveTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
 
             Result<IEnumerable<EventStatsViewModel>> eventsResult = _chatEventRepository.GetChatEventStats(5, 1, null, null);
 
@@ -520,13 +524,13 @@ namespace PowerDiary.ChatEvents.UnitTests.Tests
             _inMemoryDB.Users.Add(new User(9, "Sophie"));
             _inMemoryDB.ChatRooms.Add(new ChatRoom(5, "CollegeBuddies"));
 
-            Result user1EntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result user2EntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
-            Result user3EntryLeavingResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 8, ChatRoomId = 5 });
-            Result user4EntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 9, ChatRoomId = 5 });
-            Result user1HighFivingUser2 = _chatEventRepository.HighFive(new HighFiveDTO() { UserId = 3, ChatRoomId = 5, OtherUserId = 6 });
-            Result user1HighFivingUser3 = _chatEventRepository.HighFive(new HighFiveDTO() { UserId = 3, ChatRoomId = 5, OtherUserId = 8 });
-            Result user1HighFivingUser4 = _chatEventRepository.HighFive(new HighFiveDTO() { UserId = 3, ChatRoomId = 5, OtherUserId = 9 });
+            Result user1EntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result user2EntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result user3EntryLeavingResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 8, ChatRoomId = 5 });
+            Result user4EntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 9, ChatRoomId = 5 });
+            Result user1HighFivingUser2 = _chatActionRepository.HighFive(new HighFiveDTO() { UserId = 3, ChatRoomId = 5, OtherUserId = 6 });
+            Result user1HighFivingUser3 = _chatActionRepository.HighFive(new HighFiveDTO() { UserId = 3, ChatRoomId = 5, OtherUserId = 8 });
+            Result user1HighFivingUser4 = _chatActionRepository.HighFive(new HighFiveDTO() { UserId = 3, ChatRoomId = 5, OtherUserId = 9 });
 
 
             Result<IEnumerable<EventStatsViewModel>> eventsResult = _chatEventRepository.GetChatEventStats(5, 1, null, null);
@@ -567,13 +571,13 @@ namespace PowerDiary.ChatEvents.UnitTests.Tests
             _inMemoryDB.Users.Add(new User(9, "Sophie"));
             _inMemoryDB.ChatRooms.Add(new ChatRoom(5, "CollegeBuddies"));
 
-            Result user1EntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
-            Result user2EntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
-            Result user3EntryLeavingResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 8, ChatRoomId = 5 });
-            Result user4EntryResult = _chatEventRepository.EnterTheRoom(new UserRoomDTO() { UserId = 9, ChatRoomId = 5 });
-            Result user2HighFivingUser1 = _chatEventRepository.HighFive(new HighFiveDTO() { UserId = 6, ChatRoomId = 5, OtherUserId = 3 });
-            Result user3HighFivingUser1 = _chatEventRepository.HighFive(new HighFiveDTO() { UserId = 8, ChatRoomId = 5, OtherUserId = 3 });
-            Result user4HighFivingUser1 = _chatEventRepository.HighFive(new HighFiveDTO() { UserId = 9, ChatRoomId = 5, OtherUserId = 3 });
+            Result user1EntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 3, ChatRoomId = 5 });
+            Result user2EntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 6, ChatRoomId = 5 });
+            Result user3EntryLeavingResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 8, ChatRoomId = 5 });
+            Result user4EntryResult = _chatActionRepository.EnterTheRoom(new UserRoomDTO() { UserId = 9, ChatRoomId = 5 });
+            Result user2HighFivingUser1 = _chatActionRepository.HighFive(new HighFiveDTO() { UserId = 6, ChatRoomId = 5, OtherUserId = 3 });
+            Result user3HighFivingUser1 = _chatActionRepository.HighFive(new HighFiveDTO() { UserId = 8, ChatRoomId = 5, OtherUserId = 3 });
+            Result user4HighFivingUser1 = _chatActionRepository.HighFive(new HighFiveDTO() { UserId = 9, ChatRoomId = 5, OtherUserId = 3 });
 
             Result<IEnumerable<EventStatsViewModel>> eventsResult = _chatEventRepository.GetChatEventStats(5, 1, null, null);
 

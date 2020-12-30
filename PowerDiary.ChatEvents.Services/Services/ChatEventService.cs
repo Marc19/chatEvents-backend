@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using CSharpFunctionalExtensions;
-using PowerDiary.ChatEvents.Services.DTOs;
 using PowerDiary.ChatEvents.Services.Interfaces;
 using PowerDiary.ChatEvents.Services.ViewModels;
 
@@ -15,26 +14,6 @@ namespace PowerDiary.ChatEvents.Services.Services
         public ChatEventService(IChatEventRepository chatEventRepository)
         {
             _chatEventRepository = chatEventRepository;
-        }
-
-        public Result EnterTheRoom(UserRoomDTO userRoomDTO)
-        {
-            return _chatEventRepository.EnterTheRoom(userRoomDTO); 
-        }
-
-        public Result LeaveTheRoom(UserRoomDTO userRoomDTO)
-        {
-            return _chatEventRepository.LeaveTheRoom(userRoomDTO);
-        }
-
-        public Result Comment(CommentDTO commentDTO)
-        {
-            return _chatEventRepository.Comment(commentDTO);
-        }
-
-        public Result HighFive(HighFiveDTO highFiveDTO)
-        {
-            return _chatEventRepository.HighFive(highFiveDTO);
         }
 
         public Result<IEnumerable<EventViewModel>> GetChatEvents(int chatRoomId, string from, string to)
@@ -50,7 +29,7 @@ namespace PowerDiary.ChatEvents.Services.Services
             {
                 return Result.Failure<IEnumerable<EventViewModel>>(datesResult.Error);
             }
-            
+
             return _chatEventRepository.GetChatEvents(chatRoomId, fromDateResult.Value, toDateResult.Value);
         }
 
@@ -59,7 +38,7 @@ namespace PowerDiary.ChatEvents.Services.Services
             Result<DateTime?> fromDateResult = ConvertToDateTime(from, "From");
             Result<DateTime?> toDateResult = ConvertToDateTime(to, "To");
             Result dateRangesResult =
-                ValidateDateRanges(fromDateResult.IsSuccess? fromDateResult.Value : null, toDateResult.IsSuccess? toDateResult.Value : null);
+                ValidateDateRanges(fromDateResult.IsSuccess ? fromDateResult.Value : null, toDateResult.IsSuccess ? toDateResult.Value : null);
             Result granularityResult = ValidateGranularity(granularity);
 
             Result datesResult = Result.Combine(fromDateResult, toDateResult, dateRangesResult, granularityResult);
@@ -94,9 +73,9 @@ namespace PowerDiary.ChatEvents.Services.Services
 
         private Result ValidateDateRanges(DateTime? fromDate, DateTime? toDate)
         {
-            if(fromDate != null && toDate != null)
+            if (fromDate != null && toDate != null)
             {
-                if(fromDate > toDate)
+                if (fromDate > toDate)
                 {
                     return Result.Failure("From Date cannot be greater than To Date!");
                 }
@@ -107,7 +86,7 @@ namespace PowerDiary.ChatEvents.Services.Services
 
         private Result ValidateGranularity(int granularity)
         {
-            if(24 % granularity == 0)
+            if (24 % granularity == 0)
             {
                 return Result.Success();
             }
@@ -115,14 +94,6 @@ namespace PowerDiary.ChatEvents.Services.Services
             return Result.Failure("Granularity value must be one of: [1, 2, 3, 4, 6, 8, 12, 24]");
         }
 
-        public Result<IEnumerable<UserViewModel>> GetUsers()
-        {
-            return _chatEventRepository.GetUsers();
-        }
-
-        public Result<IEnumerable<ChatRoomViewModel>> GetChatRooms()
-        {
-            return _chatEventRepository.GetChatRooms();
-        }
+        
     }
 }

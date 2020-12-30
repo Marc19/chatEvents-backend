@@ -15,9 +15,10 @@ namespace PowerDiary.ChatEvents.UnitTests
         {
             var serviceCollection = new ServiceCollection();
 
+            serviceCollection.AddTransient<IChatActionRepository, ChatActionRepository>();
+            serviceCollection.AddTransient<IChatActionService, ChatActionService>();
             serviceCollection.AddTransient<IChatEventRepository, ChatEventRepository>();
             serviceCollection.AddTransient<IChatEventService, ChatEventService>();
-            serviceCollection.AddTransient<IChatEventObserverRepository, ChatEventObserverRepository>();
             serviceCollection.AddSingleton<IChatRoomObserver, ChatRoomEventObserver>();
             serviceCollection.AddSingleton<IInMemoryDB, InMemoryTestDB>();
 
